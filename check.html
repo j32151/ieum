@@ -6,11 +6,10 @@
 <title>이음 IEUM 예약 확인</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300;400;500&family=Noto+Serif+KR:wght@300;400;500&display=swap">
 <style>
-/* 레이아웃: 예약 페이지와 같은 종이색 한 열. 조회 양식 → 결과 카드 */
+/* 레이아웃: 예약 페이지와 같은 종이색 한 열. 이름·연락처 조회 → 예약 카드 목록 */
 :root{
   --bg:#F7F2EB; --ink:#302921; --text:#564E45; --muted:#6C635A; --line:#E3DACF; --field:#C3B8AA;
-  --wave:#4D6069; --sand-soft:rgba(181,161,140,.12);
-  --seal:#90291A; --seal-deep:#7E2416; --white:rgba(255,255,255,.55);
+  --wave:#4D6069; --seal:#90291A; --seal-deep:#7E2416; --white:rgba(255,255,255,.55);
   --serif:'Noto Serif KR','Nanum Myeongjo',Batang,serif;
   --sans:'Noto Sans KR','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
   color-scheme:light;
@@ -47,7 +46,6 @@ main{padding-block:clamp(56px,8vw,112px) clamp(88px,10vw,144px)}
 .btn[disabled]{border-style:dashed;border-color:#AFA497;background:transparent;color:var(--muted);cursor:not-allowed}
 .row{display:flex;flex-wrap:wrap;gap:10px}
 .box{margin-top:clamp(40px,5vw,64px);max-width:720px;padding:clamp(28px,4vw,48px);border:1px solid var(--line);background:var(--white);display:flex;flex-direction:column;align-items:flex-start;gap:20px}
-.box h2{font-family:var(--serif);font-size:22px;font-weight:300;line-height:1.5;color:var(--ink)}
 form{display:flex;flex-direction:column;gap:24px;width:100%}
 .pair{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:24px 16px}
 .pair>*{min-width:0}
@@ -57,15 +55,22 @@ form{display:flex;flex-direction:column;gap:24px;width:100%}
 .help{margin-top:6px;font-size:12px;line-height:1.7;color:var(--muted)}
 .err{margin-top:6px;font-size:13px;line-height:1.7;color:var(--seal-deep)}
 .alert{width:100%;padding:14px 18px;border:1px solid var(--seal-deep);background:#fff;font-size:13px;line-height:1.8;color:var(--ink)}
+
+.results{margin-top:clamp(40px,5vw,64px);max-width:720px;display:flex;flex-direction:column;gap:20px}
+.results-head{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:12px}
+.results-head h2{font-family:var(--serif);font-size:22px;font-weight:300;color:var(--ink)}
+.card{padding:clamp(24px,3.5vw,40px);border:1px solid var(--line);background:var(--white);display:flex;flex-direction:column;align-items:flex-start;gap:16px}
+.card h3{font-family:var(--serif);font-size:20px;font-weight:300;line-height:1.5;color:var(--ink)}
 .status{display:inline-flex;align-items:center;padding:1px 12px;border:1px solid var(--wave);color:var(--wave);font-size:12px;font-weight:500;letter-spacing:.08em}
 .status.done{background:var(--wave);color:#fff}
 .status.cancel{border-color:var(--seal);color:var(--seal-deep)}
 .kv{display:grid;grid-template-columns:auto minmax(0,1fr);gap:8px 20px;font-size:14px}
 .kv dt{font-size:12px;letter-spacing:.08em;color:var(--muted);padding-top:2px;white-space:nowrap}
 .kv dd{color:var(--ink);font-weight:400;font-variant-numeric:tabular-nums}
-.account{width:100%;padding:18px 20px;border:1px solid var(--ink);background:#fff}
-.account p{font-size:17px;font-weight:400;color:var(--ink);white-space:pre-line;user-select:all}
-.notes{width:100%;padding-top:16px;border-top:1px solid var(--line);display:flex;flex-direction:column;gap:12px;font-size:13px;line-height:1.8}
+.account{width:100%;padding:16px 18px;border:1px solid var(--ink);background:#fff}
+.account .k{font-size:12px;color:var(--muted);user-select:none}
+.account .v{font-size:17px;font-weight:400;color:var(--ink);user-select:all}
+.notes{padding-top:16px;border-top:1px solid var(--line);font-size:13px;line-height:1.8}
 .notes h3{font-size:12px;font-weight:500;letter-spacing:.08em;color:var(--ink)}
 .notes p{white-space:pre-line}
 footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:var(--muted)}
@@ -85,17 +90,16 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
     <div class="head">
       <p class="label" lang="en">Check</p>
       <h1 class="title">예약 확인</h1>
-      <p>예약번호와 신청할 때 적은 연락처를 넣으면 예약 상태를 볼 수 있습니다.</p>
+      <p>신청할 때 적은 이름과 연락처를 넣으면 예약 상태를 볼 수 있습니다.</p>
     </div>
 
     <div class="box" id="lookup-box">
       <form id="form" novalidate>
         <div class="pair">
           <div>
-            <label class="flabel" for="no">예약번호</label>
-            <input class="input" id="no" name="no" type="text" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="IE-ABCDE" maxlength="8" aria-describedby="no-help no-error">
-            <p class="help" id="no-help">예약 완료 화면에 나온 번호입니다.</p>
-            <p class="err" id="no-error" hidden></p>
+            <label class="flabel" for="cname">이름</label>
+            <input class="input" id="cname" name="name" type="text" autocomplete="name" maxlength="30" aria-describedby="cname-error">
+            <p class="err" id="cname-error" hidden></p>
           </div>
           <div>
             <label class="flabel" for="phone">연락처</label>
@@ -111,30 +115,17 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
       </form>
     </div>
 
-    <div class="box" id="result" tabindex="-1" hidden>
-      <span class="status" id="r-status"></span>
-      <h2 id="r-title"></h2>
-      <p id="r-text"></p>
-      <dl class="kv">
-        <dt>예약번호</dt><dd id="r-no"></dd>
-        <dt>날짜</dt><dd id="r-date"></dd>
-        <dt>회차</dt><dd id="r-session"></dd>
-        <dt>인원</dt><dd id="r-guests"></dd>
-        <dt>금액</dt><dd id="r-amount"></dd>
-      </dl>
-      <div class="account" id="r-account-box" hidden>
-        <p class="small muted" style="font-size:12px;user-select:none">입금 계좌</p>
-        <p id="r-account"></p>
+    <section class="results" id="results" tabindex="-1" aria-labelledby="results-title" hidden>
+      <div class="results-head">
+        <h2 id="results-title"></h2>
+        <button class="btn" id="again" type="button">다시 조회하기</button>
       </div>
-      <div class="notes">
-        <div id="r-deadline-wrap" hidden><h3>입금 안내</h3><p id="r-deadline"></p></div>
-        <div><h3>취소·환불 안내</h3><p id="r-refund"></p></div>
-      </div>
+      <div id="cards" style="display:flex;flex-direction:column;gap:20px"></div>
+      <div class="notes" id="refund-wrap" hidden><h3>취소·환불 안내</h3><p id="refund"></p></div>
       <div class="row">
-        <a class="btn" id="r-contact" href="https://www.instagram.com/team_i.eum" target="_blank" rel="noopener">이음에 문의하기</a>
-        <button class="btn" id="again" type="button">다른 예약 확인하기</button>
+        <a class="btn" id="contact" href="https://www.instagram.com/team_i.eum" target="_blank" rel="noopener">이음에 문의하기</a>
       </div>
-    </div>
+    </section>
   </div>
 </main>
 
@@ -145,17 +136,16 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
 (function () {
   var API_URL = (typeof window.IEUM_API_URL === 'string') ? window.IEUM_API_URL.trim() : '';
   var $ = function (id) { return document.getElementById(id); };
+  function el(tag, text, cls) { var n = document.createElement(tag); if (text != null) n.textContent = text; if (cls) n.className = cls; return n; }
   function won(n) { return Number(n || 0).toLocaleString('ko-KR') + '원'; }
 
   var TEXT = {
-    '입금대기': ['입금을 기다리고 있습니다', '아래 계좌로 입금해 주세요. 입금이 확인되면 이 화면의 상태가 확정으로 바뀝니다. 운영진이 직접 확인하므로 반영까지 시간이 걸릴 수 있습니다.', ''],
+    '입금대기': ['입금을 기다리고 있습니다', '아래 계좌로 입금해 주세요. 운영진이 입금을 확인하면 상태가 확정으로 바뀝니다.', ''],
     '확정': ['예약이 확정되었습니다', '입금이 확인되었습니다. 예약한 날짜와 회차에 맞춰 방문해 주세요.', 'done'],
     '취소': ['취소된 예약입니다', '이 예약은 취소되었습니다. 취소 사유나 환불은 이음에 문의해 주세요.', 'cancel']
   };
 
   var form = $('form'), btn = $('submit'), busy = false;
-  var q = new URLSearchParams(location.search);
-  if (q.get('no')) $('no').value = q.get('no').toUpperCase().slice(0, 8);
 
   function setErr(id, msg) {
     var box = $(id + '-error');
@@ -163,59 +153,69 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
     if (msg) $(id).setAttribute('aria-invalid', 'true'); else $(id).removeAttribute('aria-invalid');
   }
   function fail(msg) { var b = $('form-error'); b.textContent = '오류: ' + msg; b.hidden = false; b.focus(); }
-  function normalizeNo(v) {
-    v = v.toUpperCase().replace(/[^A-Z0-9]/g, '');
-    if (v.indexOf('IE') === 0) v = v.slice(2);
-    return v ? 'IE-' + v : '';
-  }
-
-  ['no', 'phone'].forEach(function (id) { $(id).addEventListener('input', function () { setErr(id, ''); $('form-error').hidden = true; }); });
+  ['cname', 'phone'].forEach(function (id) { $(id).addEventListener('input', function () { setErr(id, ''); $('form-error').hidden = true; }); });
 
   form.addEventListener('submit', function (e) {
     e.preventDefault();
     if (busy) return;
     $('form-error').hidden = true;
-    var no = normalizeNo($('no').value), phone = $('phone').value.replace(/\D/g, ''), bad = false;
-    setErr('no', ''); setErr('phone', '');
-    if (!/^IE-[A-Z0-9]{5}$/.test(no)) { setErr('no', '예약번호를 IE-ABCDE 형식으로 입력해 주세요.'); bad = true; }
+    var name = $('cname').value.trim(), phone = $('phone').value.replace(/\D/g, ''), bad = false;
+    setErr('cname', ''); setErr('phone', '');
+    if (!name) { setErr('cname', '신청할 때 적은 이름을 입력해 주세요.'); bad = true; }
     if (!/^01[016789]\d{7,8}$/.test(phone)) { setErr('phone', '연락처를 010-1234-5678 형식으로 입력해 주세요.'); bad = true; }
-    if (bad) { (form.querySelector('[aria-invalid="true"]') || $('no')).focus(); return; }
+    if (bad) { (form.querySelector('[aria-invalid="true"]') || $('cname')).focus(); return; }
     if (!API_URL) { fail('예약 확인 기능이 아직 열리지 않았습니다. 이음에 문의해 주세요.'); return; }
-    $('no').value = no;
 
     busy = true; btn.disabled = true; btn.textContent = '확인하는 중…'; $('form-status').textContent = '예약을 찾는 중입니다.';
     var ctrl = ('AbortController' in window) ? new AbortController() : null;
     var timer = setTimeout(function () { if (ctrl) ctrl.abort(); }, 20000);
     fetch(API_URL, { method: 'POST', redirect: 'follow', signal: ctrl ? ctrl.signal : undefined,
                      headers: { 'Content-Type': 'text/plain;charset=utf-8' },
-                     body: JSON.stringify({ action: 'lookup', no: no, phone: phone }) })
+                     body: JSON.stringify({ action: 'lookup', name: name, phone: phone }) })
       .then(function (r) { if (!r.ok) throw new Error('http'); return r.json(); })
       .then(function (res) {
-        if (res && res.ok === true) { show(res); return; }
+        if (res && res.ok === true && Array.isArray(res.items)) { show(res); return; }
+        if (res && res.fields) { fail('예약 서버가 예전 버전입니다. 이음에 문의해 주세요.'); return; }
         fail((res && res.message) || '예약을 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.');
       })
       .catch(function () { fail('연결이 끊겨 예약을 확인하지 못했습니다. 잠시 뒤 다시 시도해 주세요.'); })
       .finally(function () { clearTimeout(timer); busy = false; btn.disabled = false; btn.textContent = '예약 확인하기'; $('form-status').textContent = ''; });
   });
 
-  function show(r) {
+  function card(r) {
     var t = TEXT[r.status] || TEXT['입금대기'];
-    var badge = $('r-status');
-    badge.textContent = r.status; badge.className = 'status' + (t[2] ? ' ' + t[2] : '');
-    $('r-title').textContent = t[0]; $('r-text').textContent = t[1];
-    $('r-no').textContent = r.no; $('r-date').textContent = r.dateLabel; $('r-session').textContent = r.session;
-    $('r-guests').textContent = r.guests + '명' + (r.pairing ? ' (페어링 ' + r.pairing + '명)' : '');
-    $('r-amount').textContent = won(r.amount);
-    $('r-account-box').hidden = !r.account; $('r-account').textContent = r.account || '';
-    $('r-deadline-wrap').hidden = !r.deadline; $('r-deadline').textContent = r.deadline || '';
-    $('r-refund').textContent = r.refund || '';
-    if (/^https:\/\//.test(r.contact || '')) $('r-contact').href = r.contact;
-    $('lookup-box').hidden = true; $('result').hidden = false; $('result').focus();
+    var c = el('article', null, 'card');
+    c.appendChild(el('span', r.status, 'status' + (t[2] ? ' ' + t[2] : '')));
+    c.appendChild(el('h3', t[0]));
+    c.appendChild(el('p', t[1]));
+    var dl = el('dl', null, 'kv');
+    [['날짜', r.dateLabel], ['회차', r.session],
+     ['인원', r.guests + '명' + (r.pairing ? ' (페어링 ' + r.pairing + '명)' : '')],
+     ['금액', won(r.amount)], ['예약번호', r.no]].forEach(function (kv) {
+      dl.appendChild(el('dt', kv[0])); dl.appendChild(el('dd', kv[1]));
+    });
+    c.appendChild(dl);
+    if (r.account) {
+      var a = el('div', null, 'account');
+      a.appendChild(el('p', '입금 계좌', 'k')); a.appendChild(el('p', r.account, 'v'));
+      c.appendChild(a);
+    }
+    if (r.deadline) c.appendChild(el('p', r.deadline, 'small muted'));
+    return c;
+  }
+
+  function show(res) {
+    var box = $('cards'); box.textContent = '';
+    res.items.forEach(function (r) { box.appendChild(card(r)); });
+    $('results-title').textContent = res.items.length > 1 ? '예약 ' + res.items.length + '건' : '예약 내역';
+    $('refund').textContent = res.refund || ''; $('refund-wrap').hidden = !res.refund;
+    if (/^https:\/\//.test(res.contact || '')) $('contact').href = res.contact;
+    $('lookup-box').hidden = true; $('results').hidden = false; $('results').focus();
   }
 
   $('again').addEventListener('click', function () {
-    $('result').hidden = true; $('lookup-box').hidden = false;
-    form.reset(); $('no').focus();
+    $('results').hidden = true; $('lookup-box').hidden = false;
+    form.reset(); $('cname').focus();
   });
 })();
 </script>

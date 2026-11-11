@@ -274,7 +274,7 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
         <div><h3>입금 안내</h3><p id="done-deadline"></p></div>
         <div><h3>취소·환불 안내</h3><p id="done-refund"></p></div>
       </div>
-      <p class="small muted">이 화면을 캡처해 두세요. 예약번호와 연락처로 예약 확인 페이지에서 상태를 볼 수 있습니다.</p>
+      <p class="small muted">예약 확인 페이지에서 이름과 연락처로 언제든 상태를 볼 수 있습니다.</p>
       <div class="row">
         <a class="btn" id="done-check" href="check.html">예약 상태 확인</a>
         <a class="btn" href="./">홈으로</a>
@@ -547,7 +547,6 @@ footer{border-top:1px solid var(--line);padding-block:32px;font-size:12px;color:
     $('done-account').textContent = r.account;
     $('done-deadline').textContent = r.deadline;
     $('done-refund').textContent = r.refund;
-    $('done-check').href = 'check.html?no=' + encodeURIComponent(r.no);
     show('done');
     if (!restored) {
       try { sessionStorage.setItem(RECEIPT_KEY, JSON.stringify(r)); } catch (err) {}
