@@ -392,9 +392,9 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
       <div class="slots">
         <p class="slots-head" id="slots-head">날짜를 선택해 주세요</p>
         <div class="slot-list" id="slot-list" aria-live="polite">
-          <p class="small muted">달력에서 운영일을 누르면 그날의 회차가 표시됩니다. 회차를 누르면 예약 신청 버튼으로 이동합니다.</p>
+          <p class="small muted">달력에서 운영일을 누르면 그날의 회차가 표시됩니다. 회차를 누르면 예약 페이지로 이동합니다.</p>
         </div>
-        <p class="small muted"><span class="tag tag-check">확인 필요</span> 회차별 좌석 수와 잔여 좌석은 아직 확인되지 않았습니다.</p>
+        <p class="small muted">남은 좌석은 예약 페이지에서 확인할 수 있습니다.</p>
         <div><a class="btn" href="#dates-cal">예약 가능 회차 확인하기</a></div>
       </div>
     </div>
@@ -435,10 +435,9 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
       <div class="book-box" id="booking">
         <p class="label" lang="en">Booking</p>
         <h3>예약 신청</h3>
-        <p class="small">버튼을 누르면 이음 인스타그램이 새 창으로 열립니다.</p>
-        <a class="btn" href="https://www.instagram.com/team_i.eum?srtk=MWpmaWMzeTQyOTBsbQ%3D%3D" target="_blank" rel="noopener">7코스 예약 신청하기
-          <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l6-6M4 3h5v5"/></svg></a>
-        <p class="small" id="picked" hidden></p>
+        <p class="small">예약 페이지에서 날짜와 회차, 인원을 골라 신청합니다.</p>
+        <a class="btn" href="reserve.html">7코스 예약 신청하기
+          <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 6h8M7 3l3 3-3 3"/></svg></a>
       </div>
     </div>
   </div>
@@ -465,8 +464,8 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
     </div>
     <div class="stack center" style="margin-top:clamp(96px,10vw,152px)">
       <p>이음은 익숙한 전통 한식을 새로운 방식으로 경험할 수 있는 식사 자리를 제안합니다.</p>
-      <a class="btn" href="https://www.instagram.com/team_i.eum?srtk=MWpmaWMzeTQyOTBsbQ%3D%3D" target="_blank" rel="noopener">예약 신청하기
-        <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l6-6M4 3h5v5"/></svg></a>
+      <a class="btn" href="reserve.html">예약 신청하기
+        <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 6h8M7 3l3 3-3 3"/></svg></a>
     </div>
   </div>
 </section>
@@ -574,8 +573,8 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
       </li>
     </ol>
     <div class="center" style="margin-top:clamp(72px,7vw,112px)">
-      <a class="btn" href="https://www.instagram.com/team_i.eum?srtk=MWpmaWMzeTQyOTBsbQ%3D%3D" target="_blank" rel="noopener">7코스 예약 신청하기
-        <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M3 9l6-6M4 3h5v5"/></svg></a>
+      <a class="btn" href="reserve.html">7코스 예약 신청하기
+        <svg aria-hidden="true" viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1"><path d="M2 6h8M7 3l3 3-3 3"/></svg></a>
     </div>
   </div>
 </div>
@@ -642,7 +641,7 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
     document.querySelectorAll('main > section[id]').forEach(function (s) { io.observe(s); });
   }
 
-  // 달력: 운영일을 누르면 그날의 회차를 보여 준다. 회차를 누르면 예약 신청 버튼으로 이동한다.
+  // 달력: 운영일을 누르면 그날의 회차를 보여 준다. 회차를 누르면 예약 페이지로 이동한다.
   var calDays = Array.prototype.slice.call(document.querySelectorAll('button.cal-d'));
   function pickDay(date) {
     calDays.forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.date === date ? 'true' : 'false'); });
@@ -650,7 +649,7 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
     var list = $('slot-list'); list.textContent = '';
     SESSION_LIST.forEach(function (s) {
       var a = el('a', '', 'slot');
-      a.href = '#booking'; a.dataset.date = date; a.dataset.session = s.value;
+      a.href = 'reserve.html?d=' + date + '&s=' + s.value;
       a.appendChild(el('span', s.label, 's')); a.appendChild(el('span', s.time, 't'));
       list.appendChild(a);
     });
@@ -699,12 +698,6 @@ footer{padding-block:clamp(120px,13vw,200px) 64px;border-top:1px solid var(--lin
     if (!target) return;
     e.preventDefault();
     closeIntro(true);
-    if (a.dataset.session) {
-      var s = SESSION_LIST.filter(function (x) { return x.value === a.dataset.session; })[0];
-      var picked = $('picked');
-      picked.textContent = '선택한 회차: ' + DATES[a.dataset.date] + ' ' + s.label + ' (' + s.time + ')';
-      picked.hidden = false;
-    }
     setMenu(false);
     target.scrollIntoView({ behavior: reduceMotion ? 'auto' : 'smooth', block: 'center' });
   });
